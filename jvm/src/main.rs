@@ -3,8 +3,10 @@ use std::fs::File;
 extern crate javaclass;
 extern crate rustop;
 extern crate log;
+extern crate zip;
 mod logger;
 mod frame;
+mod jar;
 
 use javaclass::read_classfile;
 use rustop::opts;
