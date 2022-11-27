@@ -1,7 +1,7 @@
 use crate::javaclass::*;
 use crate::log::debug;
 use crate::exit;
-use crate::array::Array;
+use crate::primarray::{PrimArray, ArrayType};
 use std::any::Any;
 
 pub struct Frame<'a> {
@@ -63,8 +63,8 @@ impl<'a> Frame<'a> {
                   let size = *self.opstack.pop().downcast_ref::<i32>().unwrap();
                   pc += 1;
                   let t = self.code[pc];
-                  match {
-                    5 => self.opstack.push(Box::new(Array::new(size as u32)), t);
+                  match t {
+                    5 => self.opstack.push(Box::new(PrimArray::new(size as u32, ArrayType::CHAR))),
                     _ => exit!("Arrays for other primitive types are unimplemented ")
                   }
                 }

@@ -1,15 +1,25 @@
 use crate::exit;
 use crate::frame::RuntimeType;
+pub enum ArrayType {
+  BOOLEAN,
+  CHAR,
+  BYTE,
+  SHORT,
+  INT,
+  LONG,
+  FLOAT,
+  DOUBLE
+}
 
-pub struct Array {
+pub struct PrimArray {
   size: u32,
-  ty: u8,
+  ty: ArrayType,
   data: Vec<RuntimeType>
 }
 
-impl Array {
-  pub fn new(size: u32, ty: u8) -> Self {
-    Array {
+impl PrimArray {
+  pub fn new(size: u32, ty: ArrayType) -> Self {
+    PrimArray {
       size,
       ty,
       data: Vec::with_capacity(size as usize)

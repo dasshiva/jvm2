@@ -6,7 +6,7 @@ extern crate log;
 mod logger;
 mod frame;
 mod loader;
-mod array;
+mod primarray;
 
 use javaclass::read_classfile;
 use rustop::opts;
