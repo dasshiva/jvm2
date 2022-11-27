@@ -1,5 +1,7 @@
 use crate::exit;
 use crate::frame::RuntimeType;
+
+#[derive(Copy, Clone)]
 pub enum ArrayType {
   BOOLEAN,
   CHAR,
@@ -11,6 +13,7 @@ pub enum ArrayType {
   DOUBLE
 }
 
+#[derive(Clone)]
 pub struct PrimArray {
   size: u32,
   ty: ArrayType,
@@ -19,11 +22,14 @@ pub struct PrimArray {
 
 impl PrimArray {
   pub fn new(size: u32, ty: ArrayType) -> Self {
-    PrimArray {
-      size,
-      ty,
-      data: Vec::with_capacity(size as usize)
-    }
+    let ins = PrimArray { 
+    size,
+    ty,
+    data: Vec::with_capacity(size as usize)
+    };
+    
+    unsafe { ins.data.set_len(size as usize); }
+    ins
   }
   
   pub fn set(&mut self, index: usize, data: RuntimeType) {

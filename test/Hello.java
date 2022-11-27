@@ -3,5 +3,6 @@ public class Hello {
     int a = 8;
     int b = a + 7;
     char[] c = new char[10];
+    c[0] = 1;
   }
 }
