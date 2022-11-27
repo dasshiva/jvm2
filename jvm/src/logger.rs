@@ -1,18 +1,17 @@
-use crate::log::{Level, Record, Metadata, SetLoggerError, LevelFilter};
+use crate::log::{Level, LevelFilter, Metadata, Record, SetLoggerError};
 
 extern crate proc_macro;
 struct Logger;
 
- #[macro_export]
+#[macro_export]
 macro_rules! exit {
-    ($($arg:tt)+) => { 
-        { 
+    ($($arg:tt)+) => {
+        {
             ::log::error!("{}", format!($($arg)+));
             std::process::exit(1)
         }
     }
 }
-
 
 static LOGGER: Logger = Logger;
 impl log::Log for Logger {
@@ -26,7 +25,13 @@ impl log::Log for Logger {
 
     fn log(&self, rec: &Record) {
         if self.enabled(rec.metadata()) {
-            eprintln!("[{}] {}:{} {}", rec.level(), rec.file().unwrap(), rec.line().unwrap(), rec.args());
+            eprintln!(
+                "[{}] {}:{} {}",
+                rec.level(),
+                rec.file().unwrap(),
+                rec.line().unwrap(),
+                rec.args()
+            );
         }
     }
 

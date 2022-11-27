@@ -1,0 +1,11 @@
+This directory has the VM support library.
+
+The VM support library is responsible for providing the core functionality required for the 
+VM to execute classes. This includes classes such as Object, String etc.
+All files here are prefixed by "VM" to indicate they are a part of this library.
+
+The VM will dynamically load classes from the library as needed and call methods as specified
+in the user application. This library acts as a replacement for the JDK provided standard library.
+All calls to standard library methods will be remapped by the VM to use the methods provided here.
+For example a call to java.lang.Object.hashCode() is remapped to VMObject.hashCode()
+and so on and so forth.
