@@ -3,10 +3,10 @@ use std::fs::File;
 extern crate javaclass;
 extern crate rustop;
 extern crate log;
-extern crate zip;
 mod logger;
 mod frame;
-mod jar;
+mod loader;
+mod array;
 
 use javaclass::read_classfile;
 use rustop::opts;
@@ -51,7 +51,7 @@ fn main() {
    debug!("Found method main(String[] args)");
    debug!("Starting main");
    
-   let mut mframe = Frame::new(&main, &class.constant_pool);
+   let mut mframe = Frame::new(&main, &class.constant_pool, Option::None);
    mframe.exec();
    debug!("Main method ended");
    debug!("Shutting down VM. Goodbye!");

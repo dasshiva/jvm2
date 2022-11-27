@@ -1,23 +1,24 @@
 use crate::javaclass::*;
 use crate::log::debug;
 use crate::exit;
+use crate::array::Array;
 use std::any::Any;
 
 pub struct Frame<'a> {
-    lvarray: Vec<LocalVarType>,
+    lvarray: Vec<RuntimeType>,
     opstack: OpStack,
     cp: &'a ConstantPool,
     code: Vec<u8>
 }
 
 impl<'a> Frame<'a> {
-    pub fn new(info: &MethodInfo, cp: &'a ConstantPool) -> Self {
+    pub fn new(info: &MethodInfo, cp: &'a ConstantPool, args: Option<RuntimeType> ) -> Self {
         let code_attr = match &info.attributes[0] {
             AttributeInfo::Code { max_stack, max_locals, code, exception_table, attributes } => (max_stack, max_locals, code),
             _ => exit!("Invalid attribute")
         };
 
-        let lvarray: Vec<LocalVarType> = Vec::with_capacity(*code_attr.1 as usize);
+        let lvarray: Vec<RuntimeType> = Vec::with_capacity(*code_attr.1 as usize);
         let opstack = OpStack::new(*code_attr.0);
         let code = code_attr.2.clone();
 
@@ -33,6 +34,7 @@ impl<'a> Frame<'a> {
         let mut pc = 0usize;
         while pc < self.code.len() {
             match self.code[pc] {
+               
                 16 => { // bipush
                     pc += 1;
                     self.opstack.push(Box::new(self.code[pc] as i32));
@@ -41,12 +43,12 @@ impl<'a> Frame<'a> {
                 27 => { // iload_1
                     let e = self.lvarray[0];
                     match e {
-                        LocalVarType::Int(s) => self.opstack.push(Box::new(s)),
+                        RuntimeType::Int(s) => self.opstack.push(Box::new(s)),
                         _ => exit!("Value at index 1 of local variable array is not int")
                     };
                 },
                 60 => { // istore_1
-                    self.lvarray.push(LocalVarType::Int(*self.opstack.pop().downcast_ref::<i32>().unwrap()));
+                    self.lvarray.push(RuntimeType::Int(*self.opstack.pop().downcast_ref::<i32>().unwrap()));
                 },
 
                 61 => return, // return 
@@ -56,6 +58,16 @@ impl<'a> Frame<'a> {
                     let b = *self.opstack.pop().downcast_ref::<i32>().unwrap();
                     self.opstack.push(Box::new(a + b));
                 },
+                
+                188 => { // newarray
+                  let size = *self.opstack.pop().downcast_ref::<i32>().unwrap();
+                  pc += 1;
+                  let t = self.code[pc];
+                  match {
+                    5 => self.opstack.push(Box::new(Array::new(size as u32)), t);
+                    _ => exit!("Arrays for other primitive types are unimplemented ")
+                  }
+                }
                 _ => exit!("Unimplemented instruction {}", self.code[pc])
             }
             self.opstack.show_state();
@@ -101,7 +113,7 @@ impl OpStack {
 }
 
 #[derive(Copy, Clone)]
-enum LocalVarType {
+pub enum RuntimeType {
     Boolean(u8),
     Char(u16),
     Short(i16),
@@ -109,6 +121,12 @@ enum LocalVarType {
     Float(f32),
     Long(i64),
     Double(f64),
-    Reference,
+    Reference(RefType),
     ReturnAddr(usize)
+}
+
+#[derive(Copy, Clone)]
+pub enum RefType {
+  Array,
+  Object,
 }

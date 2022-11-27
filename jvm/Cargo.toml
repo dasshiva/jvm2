@@ -9,4 +9,3 @@ edition = "2021"
 log = "0.4.17"
 rustop = "1.1.2"
 javaclass-rs = { path = "../javaclass-rs" }
-zip = "0.6.3"

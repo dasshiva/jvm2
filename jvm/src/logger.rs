@@ -1,5 +1,4 @@
 use crate::log::{Level, Record, Metadata, SetLoggerError, LevelFilter};
-use std::process;
 
 extern crate proc_macro;
 struct Logger;
